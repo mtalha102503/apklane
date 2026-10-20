@@ -223,7 +223,11 @@ export default function AdminUpload() {
             <div>
               <label className={labelCls}>APK Download URL (R2 link)</label>
               <input className={inputCls} value={apkUrl}
-                onChange={(e) => setApkUrl(e.target.value)} placeholder="https://...r2.dev/app.apk" />
+                onChange={(e) => setApkUrl(e.target.value)} placeholder="https://pub-fc55ef31a12344c4ac7e57a1e48178bc.r2.dev/app-name.apk" />
+              <p className="text-xs text-slate-400 mt-1">
+                Pehle APK ko R2 bucket (apklane-apks) me upload karo, phir uska link yahan lagao.
+                Bucket: pub-fc55ef31a12344c4ac7e57a1e48178bc.r2.dev
+              </p>
             </div>
             <div>
               <label className={labelCls}>Admin Password</label>
