@@ -34,14 +34,20 @@ export default function AdminUpload() {
     featured: false,
   });
   const [sizeMb, setSizeMb] = useState<number | undefined>();
+  const [sizeBytes, setSizeBytes] = useState<number | undefined>();
   const [fileName, setFileName] = useState("");
   const [generated, setGenerated] = useState<string>("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [apkUrl, setApkUrl] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishResult, setPublishResult] = useState("");
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setFileName(file.name);
     setSizeMb(Math.round((file.size / (1024 * 1024)) * 10) / 10);
+    setSizeBytes(file.size);
     // Guess app name from file name
     if (!form.name) {
       const guess = file.name
@@ -76,6 +82,44 @@ export default function AdminUpload() {
   function handleGenerate() {
     const entry = buildEntry();
     setGenerated(JSON.stringify(entry, null, 2));
+  }
+
+  async function handlePublish() {
+    setPublishing(true);
+    setPublishResult("");
+    try {
+      const cat = CATEGORIES.find((c) => c.slug === form.category)!;
+      const res = await fetch("/api/admin/apps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          admin_password: adminPassword,
+          slug: slugify(form.name),
+          name: form.name,
+          version: form.version || "1.0.0",
+          developer: form.developer,
+          description: form.description,
+          category: form.category,
+          category_name: cat.name,
+          apk_url: apkUrl,
+          apk_size_bytes: sizeBytes,
+          min_android: form.min_android,
+          tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+          why_not_on_store: form.why_not_on_store,
+          permission_granted: true,
+          featured: form.featured,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setPublishResult(`✅ PUBLISHED! Page live hoga: /apps/${slugify(form.name)} (site rebuild/revalidate ke baad)`);
+      } else {
+        setPublishResult(`❌ Error: ${data.error || "unknown"}`);
+      }
+    } catch (e) {
+      setPublishResult(`❌ Network error: ${e}`);
+    }
+    setPublishing(false);
   }
 
   const preview = form.name ? buildEntry() : null;
@@ -172,16 +216,37 @@ export default function AdminUpload() {
           </div>
         )}
 
+        {/* Publish box */}
+        <div className="rounded-2xl bg-slate-800 p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">🚀 Direct Publish (Database)</h2>
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className={labelCls}>APK Download URL (R2 link)</label>
+              <input className={inputCls} value={apkUrl}
+                onChange={(e) => setApkUrl(e.target.value)} placeholder="https://...r2.dev/app.apk" />
+            </div>
+            <div>
+              <label className={labelCls}>Admin Password</label>
+              <input type="password" className={inputCls} value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)} placeholder="Admin password" />
+            </div>
+          </div>
+          <button onClick={handlePublish} disabled={publishing}
+            className="rounded-full bg-green-500 px-8 py-3 font-semibold hover:bg-green-400 transition-colors disabled:opacity-50">
+            {publishing ? "Publishing..." : "✅ Database me Publish Karo"}
+          </button>
+          {publishResult && <p className="mt-4 text-sm">{publishResult}</p>}
+        </div>
+
         <button onClick={handleGenerate}
-          className="rounded-full bg-green-500 px-8 py-3 font-semibold hover:bg-green-400 transition-colors">
-          App Entry Generate Karo
+          className="rounded-full bg-slate-600 px-8 py-3 font-semibold hover:bg-slate-500 transition-colors">
+          (Backup) JSON Entry Generate Karo
         </button>
 
         {generated && (
           <div className="mt-8">
             <p className="text-slate-300 mb-2 text-sm">
-              Ye entry copy karke <code className="text-green-400">src/data/apps.json</code> me paste karo
-              (Supabase setup ke baad ye step bhi automatic ho jayega):
+              Backup tareeqa — ye entry <code className="text-green-400">src/data/apps.json</code> me paste kar sakte ho:
             </p>
             <pre className="rounded-xl bg-slate-950 p-4 text-xs overflow-x-auto text-green-300">{generated}</pre>
           </div>
