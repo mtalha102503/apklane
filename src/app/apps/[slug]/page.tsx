@@ -7,7 +7,7 @@ import {
 } from "@/lib/seo";
 
 export async function generateStaticParams() {
-  const slugs = getAllSlugs();
+  const slugs = await getAllSlugs();
   return slugs.length ? slugs.map((slug) => ({ slug })) : [{ slug: "placeholder" }];
 }
 
@@ -17,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const app = getApp(slug);
+  const app = await getApp(slug);
   if (!app) return { title: "App Coming Soon | APKLane" };
 
   return {
@@ -42,7 +42,7 @@ export default async function AppPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const app = getApp(slug);
+  const app = await getApp(slug);
 
   if (!app) {
     return (
@@ -58,7 +58,7 @@ export default async function AppPage({
   }
 
   const faqs = appFaq(app);
-  const related = getAppsByCategory(app.category).filter((a) => a.slug !== app.slug).slice(0, 4);
+  const related = (await getAppsByCategory(app.category)).filter((a) => a.slug !== app.slug).slice(0, 4);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">

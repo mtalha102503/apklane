@@ -18,7 +18,7 @@ const CATEGORIES = [
   "media", "customization", "privacy", "other",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const urls: MetadataRoute.Sitemap = [];
 
@@ -41,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   // App pages — auto-generated for every app (auto-SEO)
-  for (const app of getAllApps()) {
+  for (const app of await getAllApps()) {
     urls.push({
       url: `${SITE_URL}/apps/${app.slug}`,
       lastModified: new Date(app.created_at),

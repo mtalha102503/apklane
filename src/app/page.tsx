@@ -23,9 +23,9 @@ const CATEGORIES = [
   "Media", "Customization", "Privacy", "Other",
 ];
 
-export default function Home() {
-  const featured = getFeaturedApps().slice(0, 8);
-  const latest = getAllApps().slice(0, 8);
+export default async function Home() {
+  const featured = (await getFeaturedApps()).slice(0, 8);
+  const latest = (await getAllApps()).slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">

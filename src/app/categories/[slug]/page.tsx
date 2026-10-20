@@ -55,7 +55,7 @@ export default async function CategoryPage({
     );
   }
 
-  const apps = getAppsByCategory(slug);
+  const apps = await getAppsByCategory(slug);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
