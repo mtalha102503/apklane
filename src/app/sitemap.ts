@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
+import { getAllApps } from "@/lib/apps";
 
 const STATIC_PAGES = [
   "",
@@ -39,6 +40,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  // App pages will be added dynamically once Supabase is connected
+  // App pages — auto-generated for every app (auto-SEO)
+  for (const app of getAllApps()) {
+    urls.push({
+      url: `${SITE_URL}/apps/${app.slug}`,
+      lastModified: new Date(app.created_at),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    });
+    urls.push({
+      url: `${SITE_URL}/apps/${app.slug}/download`,
+      lastModified: new Date(app.created_at),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    });
+  }
+
   return urls;
 }

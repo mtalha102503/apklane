@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/constants";
+import { getAppsByCategory } from "@/lib/apps";
 
 const CATEGORIES: Record<string, { name: string; description: string }> = {
   "movies-tv": { name: "Movies & TV", description: "Official streaming apps, broadcaster apps, and entertainment apps not on the Play Store." },
@@ -54,6 +55,8 @@ export default async function CategoryPage({
     );
   }
 
+  const apps = getAppsByCategory(slug);
+
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <nav className="border-b border-slate-700 px-6 py-4">
@@ -64,16 +67,30 @@ export default async function CategoryPage({
         </div>
       </nav>
       <main className="mx-auto max-w-6xl px-6 py-12">
-        <h1 className="text-4xl font-bold mb-4">{cat.name} Apps</h1>
+        <h1 className="text-4xl font-bold mb-4">Best {cat.name} Apps Not on Play Store</h1>
         <p className="text-slate-400 mb-10">{cat.description}</p>
-        <div className="rounded-2xl bg-slate-800 p-10 text-center">
-          <p className="text-slate-400">
-            Apps in this category are being curated. Check back soon!
-          </p>
-          <Link href="/" className="text-green-400 underline mt-4 inline-block">
-            ← Back to Home
-          </Link>
-        </div>
+        {apps.length === 0 ? (
+          <div className="rounded-2xl bg-slate-800 p-10 text-center">
+            <p className="text-slate-400">
+              Apps in this category are being curated. Check back soon!
+            </p>
+            <Link href="/" className="text-green-400 underline mt-4 inline-block">
+              ← Back to Home
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {apps.map((app) => (
+              <Link key={app.slug} href={`/apps/${app.slug}`}
+                className="rounded-xl bg-slate-800 p-5 hover:bg-slate-700 transition-colors">
+                <div className="text-4xl mb-3">📱</div>
+                <div className="font-semibold">{app.name}</div>
+                <div className="text-xs text-slate-400 mt-1">v{app.version} • {app.size_mb ? `${app.size_mb} MB` : "Free"}</div>
+                <div className="text-xs text-slate-400">{app.download_count.toLocaleString()} downloads</div>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

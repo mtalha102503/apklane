@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getFeaturedApps, getAllApps } from "@/lib/apps";
 
 const HIGHLIGHTED = [
   {
@@ -23,6 +24,9 @@ const CATEGORIES = [
 ];
 
 export default function Home() {
+  const featured = getFeaturedApps().slice(0, 8);
+  const latest = getAllApps().slice(0, 8);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
       {/* Navbar */}
@@ -95,6 +99,25 @@ export default function Home() {
             </Link>
           ))}
         </div>
+
+        {/* Featured / Latest Apps — auto-listed */}
+        {(featured.length > 0 || latest.length > 0) && (
+          <div className="mb-16 text-left">
+            <h2 className="text-2xl font-semibold mb-8">
+              {featured.length > 0 ? "⭐ Featured Apps" : "🆕 Latest Apps"}
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(featured.length > 0 ? featured : latest).map((app) => (
+                <Link key={app.slug} href={`/apps/${app.slug}`}
+                  className="rounded-xl bg-slate-700 p-5 hover:bg-slate-600 transition-colors">
+                  <div className="text-4xl mb-3">📱</div>
+                  <div className="font-semibold">{app.name}</div>
+                  <div className="text-xs text-slate-400 mt-1">v{app.version} • {app.category_name}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Coming soon */}
         <div className="rounded-2xl bg-slate-700/50 p-10">
