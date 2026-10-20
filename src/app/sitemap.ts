@@ -12,6 +12,7 @@ const STATIC_PAGES = [
 ];
 
 const CATEGORIES = [
+  "movies-tv", "sports",
   "tools", "games", "productivity", "social",
   "media", "customization", "privacy", "other",
 ];

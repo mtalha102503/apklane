@@ -3,6 +3,8 @@ import Link from "next/link";
 import { SITE_URL } from "@/lib/constants";
 
 const CATEGORIES: Record<string, { name: string; description: string }> = {
+  "movies-tv": { name: "Movies & TV", description: "Official streaming apps, broadcaster apps, and entertainment apps not on the Play Store." },
+  sports: { name: "Sports", description: "Live scores, official sports apps, and sports updates." },
   tools: { name: "Tools", description: "Utility apps, file managers, and productivity tools not on the Play Store." },
   games: { name: "Games", description: "Independent games you won't find on Google Play." },
   productivity: { name: "Productivity", description: "Task managers, notes, and work apps." },
